@@ -1,4 +1,4 @@
-   <?php 
+<?php 
 /*
 Plugin Name: ALT Lab Patterns in Place website
 Plugin URI:  https://github.com/
