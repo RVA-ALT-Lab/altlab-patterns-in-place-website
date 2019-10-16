@@ -31,6 +31,7 @@ function patterninplaces_handle_form_submission( $form, $fields, $args ) {
     $region = $fields[1]['value'];
     $slug_region = sanitize_title($region);
     $region_cat_id = get_category_by_slug($slug_region)->term_id;
+    $pattern_cat_id = get_category_by_slug('pattern')->term_id;
     // write_log($region);
     // write_log($slug_region);
     // write_log($region_cat_id);
@@ -52,7 +53,7 @@ function patterninplaces_handle_form_submission( $form, $fields, $args ) {
         $args = array(
             'post_title' => wp_strip_all_tags('Pattern from ' . $region),
             'post_status'   => 'publish',
-            'post_category' => array($region_cat_id),
+            'post_category' => array($region_cat_id, $pattern_cat_id),
             'tags_input' => $pattern_description . ',' . $material,
             'post_content' => $notes,
         );
@@ -92,3 +93,26 @@ if ( ! function_exists('write_log')) {
       }
    }
 }
+
+
+function patternsinplace_make_map($content){
+    global $post;
+    if (in_category('pattern',$post->ID)){
+      $address_field = get_field('location', $post->ID);
+      $lat = $address_field['lat'];
+      $long = $address_field['lng'];
+      $encoded_address = $lat.','.$long;
+      $html = '
+          <iframe
+              width="100%"
+              height="450"
+              frameborder="0" style="border:0"
+              src="https://www.google.com/maps/embed/v1/place?key=AIzaSyBct6oqg7fdGapy-iaC7Bnq3GCsaOQuG0c&q=' . $encoded_address . '" allowfullscreen>
+          </iframe>';
+      return $content . $html;
+    } else {
+      return $content;
+    }
+}
+
+add_filter( 'the_content', 'patternsinplace_make_map');
