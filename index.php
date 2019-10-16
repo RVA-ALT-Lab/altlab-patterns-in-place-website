@@ -26,16 +26,18 @@ function patterninplaces_load_scripts() {
 }
 
 function patterninplaces_handle_form_submission( $form, $fields, $args ) {
-    $email = $fields[0]['value'];
-    // write_log($email);
-    $region = $fields[1]['value'];
+    $first_name = $fields[0]['value'];
+    $last_name = $fields[1]['value'];
+    $email = $fields[2]['value'];
+    write_log($fields);
+    $region = $fields[3]['value'];
     $slug_region = sanitize_title($region);
     $region_cat_id = get_category_by_slug($slug_region)->term_id;
     $pattern_cat_id = get_category_by_slug('pattern')->term_id;
     // write_log($region);
     // write_log($slug_region);
     // write_log($region_cat_id);
-    $data = $fields[2]['value']; 
+    $data = $fields[4]['value']; 
     //write_log($data);   
    foreach ($data as $key => $item) {
 //GET DATA
@@ -61,8 +63,10 @@ function patterninplaces_handle_form_submission( $form, $fields, $args ) {
         set_post_thumbnail($post_id, $image);
         //email field_5da5e47d95f12
         //location field_5da5e48895f13
-        update_field('field_5da5e47d95f12', $email, $post_id);
-        update_field('field_5da5e48895f13', $general_location, $post_id);
+        update_field('submitter_email', $email, $post_id);
+        update_field('location', $general_location, $post_id);
+        update_field('first_name',$first_name, $post_id);
+        update_field('last_name',$last_name,$post_id);
     }
        
 
