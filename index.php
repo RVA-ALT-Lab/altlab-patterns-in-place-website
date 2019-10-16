@@ -103,7 +103,7 @@ function patternsinplace_attribution($content){
    $first = get_field('first_name', $post->ID);
    $last = get_field('last_name', $post->ID);
     if (in_category('pattern',$post->ID)){
-     return $content . '<div class="attribution">' . $first . ' ' . $last . '</div>';
+     return $content . '<div class="attribution">Submitted by ' . $first . ' ' . $last . '</div>';
     } else {
       return $content;
     }
