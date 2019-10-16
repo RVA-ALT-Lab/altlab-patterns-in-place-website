@@ -66,7 +66,7 @@ function patterninplaces_handle_form_submission( $form, $fields, $args ) {
         update_field('submitter_email', $email, $post_id);
         update_field('location', $general_location, $post_id);
         update_field('first_name',$first_name, $post_id);
-        update_field('last_name',$last_name,$post_id);
+        update_field('last_name',$last_name, $post_id);
     }
        
 
@@ -98,6 +98,18 @@ if ( ! function_exists('write_log')) {
    }
 }
 
+function patternsinplace_attribution($content){
+   global $post;
+   $first = get_field('first_name', $post->ID);
+   $last = get_field('last_name', $post->ID);
+    if (in_category('pattern',$post->ID)){
+     return $content . '<div class="attribution">' . $first . ' ' . $last . '</div>';
+    } else {
+      return $content;
+    }
+}
+
+add_filter( 'the_content', 'patternsinplace_attribution');
 
 function patternsinplace_make_map($content){
     global $post;
@@ -120,3 +132,5 @@ function patternsinplace_make_map($content){
 }
 
 add_filter( 'the_content', 'patternsinplace_make_map');
+
+
