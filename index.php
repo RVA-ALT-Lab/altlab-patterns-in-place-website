@@ -29,11 +29,12 @@ function patterninplaces_handle_form_submission( $form, $fields, $args ) {
     $first_name = $fields[0]['value'];
     $last_name = $fields[1]['value'];
     $email = $fields[2]['value'];
-    write_log($fields);
+    //write_log($fields);
     $region = $fields[3]['value'];
     $slug_region = sanitize_title($region);
     $region_cat_id = get_category_by_slug($slug_region)->term_id;
     $pattern_cat_id = get_category_by_slug('pattern')->term_id;
+    $all_cats =[$region_cat_id, $pattern_cat_id];
     // write_log($region);
     // write_log($slug_region);
     // write_log($region_cat_id);
@@ -44,19 +45,22 @@ function patterninplaces_handle_form_submission( $form, $fields, $args ) {
       //write_log($item);
       $image = $item['pattern_image']['ID'];
       $pattern_description = $item['pattern_description'];
+      write_log($pattern_description);
+      patternsinplace_return_cat_ids($pattern_description, $all_cats);
       $general_location = $item['pattern_location'];
       //$address = $row['pattern_location']['address'];
       $lat = $item['pattern_location']['lat'];
       $long = $item['pattern_location']['lng'];
       $material = $item['pattern_materiality'];
+       patternsinplace_return_cat_ids($material, $all_cats);
+      write_log($material);
       $notes = $item['pattern_notes'];
-
       //MAKE POSTS
         $args = array(
             'post_title' => wp_strip_all_tags('Pattern from ' . $region),
             'post_status'   => 'publish',
-            'post_category' => array($region_cat_id, $pattern_cat_id),
-            'tags_input' => $pattern_description . ',' . $material,
+            'post_category' => $all_cats,
+            //'tags_input' => $pattern_description . ',' . $material,
             'post_content' => $notes,
         );
         $post_id = wp_insert_post($args);
@@ -133,4 +137,15 @@ function patternsinplace_make_map($content){
 
 add_filter( 'the_content', 'patternsinplace_make_map');
 
+
+function patternsinplace_return_cat_ids($array, &$destination){
+  //write_log($array);
+  foreach ($array as $key => $item) {
+    //write_log($item);
+    $clean_name = sanitize_title($item);
+    //write_log(get_category_by_slug($clean_name)->term_id);
+    $new_id = get_category_by_slug($clean_name)->term_id;
+    array_push($destination, $new_id);
+  }
+}
 
