@@ -72,7 +72,7 @@ function patterninplaces_handle_form_submission( $form, $fields, $args ) {
         update_field('first_name',$first_name, $post_id);
         update_field('last_name',$last_name, $post_id);
     }
-       
+    patternsinplace_send_mails_on_publish( $post_id );   
 
 }
  
@@ -163,14 +163,9 @@ function patternsinplace_return_cat_ids($array, &$destination){
 // }
 
 
-//from https://wordpress.stackexchange.com/questions/100644/how-to-auto-send-email-when-publishing-a-custom-post-type
-add_action( 'transition_post_status', 'patternsinplace_send_mails_on_publish', 10, 3 );
+function patternsinplace_send_mails_on_publish( $post_id ){
 
-function send_mails_on_publish( $new_status, $old_status, $post )
-{
-    if ( 'publish' !== $new_status or 'publish' === $old_status )
-        return;
-
+    $post = get_post($post_id);   
     $admins = get_users( array ( 'role' => 'administrator' ) );
     $emails      = array ();
 
@@ -181,7 +176,6 @@ function send_mails_on_publish( $new_status, $old_status, $post )
         See <%s>',
         get_permalink( $post )
     );
-
 
     wp_mail( $emails, 'New post in Patterns in Place', $body );
 }
