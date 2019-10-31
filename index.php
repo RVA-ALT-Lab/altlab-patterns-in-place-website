@@ -72,7 +72,7 @@ function patterninplaces_handle_form_submission( $form, $fields, $args ) {
         update_field('first_name',$first_name, $post_id);
         update_field('last_name',$last_name, $post_id);
     }
-    patternsinplace_send_mails_on_publish( $post_id );   
+    patternsinplace_send_mails_on_publish( $post_id, $first_name, $last_name );   
 
 }
  
@@ -150,20 +150,7 @@ function patternsinplace_return_cat_ids($array, &$destination){
 }
 
 
-// add_filter('wp_title', 'patternsinplace_filter_title');
-// function patternsinplace_filter_title($title) {
-//     global $post;
-//     var_dump($post->ID);
-//     $last_name = get_field('last_name', $post->ID);
-//     $post_categories = wp_get_post_categories( $post->ID );
-//     //$cats = array();
-         
-//     $region = '';
-//     return ' foo';
-// }
-
-
-function patternsinplace_send_mails_on_publish( $post_id ){
+function patternsinplace_send_mails_on_publish( $post_id, $first_name, $last_name ){
 
     $post = get_post($post_id);   
     $admins = get_users( array ( 'role' => 'administrator' ) );
@@ -171,10 +158,9 @@ function patternsinplace_send_mails_on_publish( $post_id ){
 
     foreach ( $admins as $subscriber )
         $emails[] = $subscriber->user_email;
-
-    $body = sprintf( 'Hey there is a new entry!
-        See <%s>',
-        get_permalink( $post )
+        $url = get_permalink( $post );
+        $body = $first_name . ' ' . $last_name . ' made a post at ' . $url;
+        
     );
 
     wp_mail( $emails, 'New post in Patterns in Place', $body );
