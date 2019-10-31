@@ -57,10 +57,10 @@ function patterninplaces_handle_form_submission( $form, $fields, $args ) {
       $notes = $item['pattern_notes'];
       //MAKE POSTS
         $args = array(
-            'post_title' => wp_strip_all_tags('Pattern from ' . $region),
+            'post_title' => wp_strip_all_tags($last_name . ' / ' . $region),
             'post_status'   => 'publish',
             'post_category' => $all_cats,
-            //'tags_input' => $pattern_description . ',' . $material,
+            'tags_input' => $last_name,
             'post_content' => $notes,
         );
         $post_id = wp_insert_post($args);
@@ -139,7 +139,7 @@ add_filter( 'the_content', 'patternsinplace_make_map');
 
 
 function patternsinplace_return_cat_ids($array, &$destination){
-  //write_log($array);
+  //  write_log($array);
   foreach ($array as $key => $item) {
     //write_log($item);
     $clean_name = sanitize_title($item);
@@ -149,3 +149,39 @@ function patternsinplace_return_cat_ids($array, &$destination){
   }
 }
 
+
+// add_filter('wp_title', 'patternsinplace_filter_title');
+// function patternsinplace_filter_title($title) {
+//     global $post;
+//     var_dump($post->ID);
+//     $last_name = get_field('last_name', $post->ID);
+//     $post_categories = wp_get_post_categories( $post->ID );
+//     //$cats = array();
+         
+//     $region = '';
+//     return ' foo';
+// }
+
+
+//from https://wordpress.stackexchange.com/questions/100644/how-to-auto-send-email-when-publishing-a-custom-post-type
+add_action( 'transition_post_status', 'patternsinplace_send_mails_on_publish', 10, 3 );
+
+function send_mails_on_publish( $new_status, $old_status, $post )
+{
+    if ( 'publish' !== $new_status or 'publish' === $old_status )
+        return;
+
+    $admins = get_users( array ( 'role' => 'administrator' ) );
+    $emails      = array ();
+
+    foreach ( $admins as $subscriber )
+        $emails[] = $subscriber->user_email;
+
+    $body = sprintf( 'Hey there is a new entry!
+        See <%s>',
+        get_permalink( $post )
+    );
+
+
+    wp_mail( $emails, 'New post in Patterns in Place', $body );
+}
