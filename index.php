@@ -156,12 +156,11 @@ function patternsinplace_send_mails_on_publish( $post_id, $first_name, $last_nam
     $admins = get_users( array ( 'role' => 'administrator' ) );
     $emails      = array ();
 
-    foreach ( $admins as $subscriber )
+    foreach ( $admins as $subscriber ) {
         $emails[] = $subscriber->user_email;
         $url = get_permalink( $post );
         $body = $first_name . ' ' . $last_name . ' made a post at ' . $url;
-        
-    );
+        }
 
     wp_mail( $emails, 'New post in Patterns in Place', $body );
 }
